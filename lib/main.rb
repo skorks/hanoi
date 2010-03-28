@@ -1,13 +1,38 @@
+require "hanoi_helpers"
 require "recursive_hanoi"
 require "iterative_hanoi"
+require 'optparse'
 
-#main.rb -i 5 - iterative
-#main.rb -r 3 - recursive
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: ruby main.rb [options]"
 
-#towers1 = RecursiveHanoi.new(:discs => 3)
-#towers1.solve
+  opts.on("-i", "--iterative", "Run iterative hanoi") do |option|
+    options[:type] = "IterativeHanoi"
+  end
 
-towers2 = IterativeHanoi.new(:discs => 3)
-towers2.solve
+  opts.on("-r", "--recursive", "Run recursive hanoi") do |option|
+    options[:type] = "RecursiveHanoi"
+  end
 
-#move(5.discs, :from => first, :to => second, :via => third)
+  opts.on("-d", "--disks NUM", "Number of disks to use") do |option|
+    options[:disks] = option.to_i
+  end
+end
+
+begin
+  optparse.parse!
+  mandatory = [:type, :disks]
+  missing = mandatory.select{ |param| options[param].nil? }
+  if not missing.empty?
+    puts "Missing options: #{missing.join(', ')}"
+    puts optparse
+    exit
+  end
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+  puts $!.to_s
+  puts optparse
+  exit
+end
+
+Kernel.const_get(options[:type]).new(:discs => options[:disks]).solve

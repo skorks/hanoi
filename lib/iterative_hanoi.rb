@@ -1,4 +1,5 @@
 class IterativeHanoi
+  include HanoiHelpers
   EVEN_PARITY = "even"
   ODD_PARITY = "odd"
   
@@ -14,6 +15,7 @@ class IterativeHanoi
   end
 
   def solve
+    puts "SOLVING ITERATIVELY!!!"
     print_special_state "Initial State"
     source_peg = nil
     destination = nil
@@ -53,9 +55,6 @@ class IterativeHanoi
     even_move_rules[@pegs[:pivot].object_id] = @pegs[:to]
     even_move_rules[@pegs[:to].object_id] = @pegs[:from]
 
-    puts "odd_move_rules = #{odd_move_rules.length}"
-    puts "even_move_rules = #{even_move_rules.length}"
-
     {ODD_PARITY => odd_move_rules, EVEN_PARITY => even_move_rules}
   end
 
@@ -70,69 +69,14 @@ class IterativeHanoi
   end
 
   def starting_parity
-    if @discs % 2 == 0
-      EVEN_PARITY
-    else
-      ODD_PARITY
-    end
+    @discs % 2 == 0 ? EVEN_PARITY : ODD_PARITY
   end
 
   def toggle_parity(parity)
-    if parity == ODD_PARITY
-      EVEN_PARITY
-    else
-      ODD_PARITY
-    end
+    parity == ODD_PARITY ? EVEN_PARITY : ODD_PARITY
   end
 
   def parity_of(disc)
     @disc_parities[disc]
-  end
-
-  private
-
-  def print_special_state(message)
-    puts "*************"
-    puts message
-    puts "*************"
-    print_state
-    puts "*************"
-  end
-
-  def number_of(num)
-    num
-  end
-
-  def shift(disc, pegs={})
-    raise if disc != 1.disc
-    pegs.end_peg << pegs.start_peg.delete_at(pegs.start_peg.length - 1)
-  end
-
-  def print_state
-    puts "\n"
-    puts "-------"
-    current_index = @discs - 1
-    while(current_index >= 0)
-      row_value = [" "," "," "]
-      @peg_array.each_with_index do |peg, peg_number|
-        row_value[peg_number] = peg[current_index] if peg.length > current_index
-      end
-      puts " #{row_value.join(' ')} "
-      current_index -= 1
-    end
-    puts "-------"
-    puts " A B C "
-    puts "-------"
-    puts "\n"
-  end
-
-  def state_valid
-    @peg_array.each do |peg|
-      next if peg.empty?
-      (0..peg.length - 2).each do |index|
-        return false unless peg[index] > peg[index + 1]
-      end
-    end
-    return true
   end
 end
